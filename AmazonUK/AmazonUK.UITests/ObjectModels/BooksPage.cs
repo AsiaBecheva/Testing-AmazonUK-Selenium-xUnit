@@ -11,6 +11,7 @@ namespace AmazonUK.UITests.ObjectModels
         private const string BookTitleContainsText = "Harry Potter and The Cursed Child - Parts One and Two";
         private const string BookTitle = "Harry Potter and the Cursed Child";
         private const string Paperback = "Paperback";
+        private const string BookPriceMainSearchPath = "span[class='a-offscreen']";
 
         public BooksPage(IWebDriver driver)
         {
@@ -22,6 +23,8 @@ namespace AmazonUK.UITests.ObjectModels
 
         public bool CheckIfHavePaperback => Driver.FindElement(By.CssSelector(DataIndexAtrFirstElement))
                         .FindElement(By.LinkText(Paperback)).Displayed;
+
+        public IWebElement PriceOnMainSearch => Driver.FindElement(By.CssSelector(BookPriceMainSearchPath));
 
         public void ClickBooksSectionLink() => Driver.FindElement(By.LinkText(BooksSectionLink)).Click();
 

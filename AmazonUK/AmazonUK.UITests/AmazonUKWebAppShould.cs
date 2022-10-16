@@ -64,6 +64,7 @@
 
                     if (!bookPage.CheckIfHavePaperback)
                     {
+                        Helper.Pause();
                         Assert.Fail("This book does not have paperback!");
                     }
                 }
@@ -97,6 +98,34 @@
                 var paperbackElement = driver.FindElement(By.CssSelector(paperbackPriceSelector));
 
                 Assert.Equal(price, paperbackElement.Text);
+            }
+        }
+
+        [Fact]
+        [Trait("Category", "Book")]
+        //UA3
+        public void CheckPaperbackPriceIsSameAsPageOnBack()
+        {
+            string paperbackPriceSelector = "span[class='a-size-base a-color-price a-color-price']";
+
+            using (IWebDriver driver = new ChromeDriver())
+            {
+                var homePage = new HomePage(driver);
+                homePage.NavigateTo(driver);
+                var bookPage = new BooksPage(driver);
+
+                bookPage.ClickBooksSectionLink();
+                Helper.Pause();
+                bookPage.FindBookInSearchField();
+                Helper.Pause();
+                bookPage.ClickOnPaperback();
+                Helper.Pause();
+                var paperbackElement = driver.FindElement(By.CssSelector(paperbackPriceSelector)).Text;
+                driver.Navigate().Back();
+                Helper.Pause();
+
+
+                Assert.Equal(paperbackElement, bookPage.PriceOnMainSearch.Text);
             }
         }
     }
