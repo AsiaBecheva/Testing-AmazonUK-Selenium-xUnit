@@ -20,7 +20,7 @@
         {
             Driver.Navigate().GoToUrl(PageUrl);
             EnsurePageLoaded();
-            driver.FindElement(By.Id(CookieId)).Click();
+            CookieCheck(driver);
         }
 
         public void EnsurePageLoaded()
@@ -30,6 +30,15 @@
             if (!pageHasLoaded)
             {
                 throw new Exception($"Failed to load page. Page URL = '{Driver.Url}' Page Source: \r\n {Driver.PageSource}");
+            }
+        }
+
+        public void CookieCheck(IWebDriver driver)
+        {
+            var cookieAppeared = driver.FindElement(By.Id(CookieId));
+            if (cookieAppeared.Enabled)
+            {
+                driver.FindElement(By.Id(CookieId)).Click();
             }
         }
     }
