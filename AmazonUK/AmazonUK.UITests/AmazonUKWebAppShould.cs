@@ -4,6 +4,7 @@
     using OpenQA.Selenium;
     using OpenQA.Selenium.Chrome;
     using AmazonUK.UITests.ObjectModels;
+    using AmazonUK.UITests.Constants;
 
     public class AmazonUKWebAppShould
     {
@@ -37,7 +38,7 @@
 
                 if (!bookPage.FirstResult)
                 {
-                    Assert.Fail("The book does not contain such Title");
+                    Assert.Fail(ErrorMessagesConstants.BookDoesNotContainSuchTitle);
                 }
             }
         }
@@ -65,12 +66,12 @@
                     if (!bookPage.CheckIfHavePaperback)
                     {
                         Helper.Pause();
-                        Assert.Fail("This book does not have paperback!");
+                        Assert.Fail(ErrorMessagesConstants.ThisBookDoesNotHavePaperBack);
                     }
                 }
                 else
                 {
-                    Assert.Fail("The book does not contain such Title.");
+                    Assert.Fail(ErrorMessagesConstants.BookDoesNotContainSuchTitle);
                 }
             }
         }
@@ -102,8 +103,6 @@
         //UA3
         public void CheckPaperbackPriceIsSameAsPageOnBack()
         {
-            string paperbackPriceSelector = "span[class='a-size-base a-color-price a-color-price']";
-
             using (IWebDriver driver = new ChromeDriver())
             {
                 var homePage = new HomePage(driver);
@@ -116,12 +115,10 @@
                 Helper.Pause();
                 bookPage.ClickOnPaperback();
                 Helper.Pause();
-                var paperbackElement = driver.FindElement(By.CssSelector(paperbackPriceSelector)).Text;
                 driver.Navigate().Back();
                 Helper.Pause();
 
-
-                Assert.Equal(paperbackElement, bookPage.PriceOnMainSearch.Text);
+                Assert.Equal(bookPage.FindPaperbackElementPrice.Text, bookPage.PriceOnMainSearch.Text);
             }
         }
 
@@ -147,38 +144,69 @@
                 string paperbackPrice = bookPage.FindPaperbackElementPrice.Text.ToLower();
                 Helper.Pause();
 
-                driver.FindElement(By.Id("add-to-cart-button")).Click();
-                Helper.Pause();
-                driver.FindElement(By.Id("nav-cart")).Click();
+                bookPage.AddToCardButtonClick();
                 Helper.Pause();
 
-                bool isTheSameTitle = driver.FindElement(By.ClassName("a-truncate-cut"))
-                    .Text.ToLower().Contains(BooksPage.BookTitle.ToLower());
+                bookPage.NavCardClick();
                 Helper.Pause();
 
-                //Taking the price in Basket
-                string pathToPriceInBasket = driver.FindElement(By.Id("activeCartViewForm"))
-                    .FindElement(By.ClassName("sc-price")).Text.ToLower();
-
-                driver.FindElement(By.Id("activeCartViewForm"))
-                    .FindElement(By.CssSelector("input[type='checkbox']")).Click();
+                bookPage.ClickOnCheckboxGift();
                 Helper.Pause();
 
-                bool checkboxIsSelected = driver.FindElement(By.Id("activeCartViewForm"))
-                    .FindElement(By.CssSelector("input[type='checkbox']")).Selected;
-                Helper.Pause();
-
-                if (!isTheSameTitle)
+                if (!bookPage.IsTheSameTitle)
                 {
-                    Assert.Fail("Titles does not match!");
+                    Assert.Fail(ErrorMessagesConstants.TitlesDoesNotMatch);
                 }
-                if (paperbackPrice != pathToPriceInBasket)
+                if (paperbackPrice != bookPage.PriceInBasket)
                 {
-                    Assert.Fail("Prices does not match!");
+                    Assert.Fail(ErrorMessagesConstants.PricesDoesNotMatch);
                 }
-                if (!checkboxIsSelected)
+                if (!bookPage.CheckboxIsSelected)
                 {
-                    Assert.Fail("Gift checkbox is not checked!");
+                    Assert.Fail(ErrorMessagesConstants.GiftCheckBoxIsNotChecked);
+                }
+            }
+        }
+
+        [Fact]
+        [Trait("Category", "Book")]
+        //UA5
+        public void CheckIfCorrectEditionAddedPriceSameAsInitialAndNoOtherProductsAdded()
+        {
+            using (IWebDriver driver = new ChromeDriver())
+            {
+                var homePage = new HomePage(driver);
+                homePage.NavigateTo(driver);
+                var bookPage = new BooksPage(driver);
+
+                bookPage.ClickBooksSectionLink();
+                Helper.Pause();
+                bookPage.FindBookInSearchField();
+                Helper.Pause();
+
+                //Taking the initial price while I'm on this page.
+                string priceInitialPaperback = "";
+
+                bookPage.ClickOnPaperback();
+                Helper.Pause();
+
+                bookPage.AddToCardButtonClick();
+                Helper.Pause();
+
+                bookPage.NavCardClick();
+                Helper.Pause();
+
+                if (!bookPage.IsTheSameTitle)
+                {
+                    Assert.Fail(ErrorMessagesConstants.TitlesDoesNotMatch);
+                }
+                //if (priceInitialPaperback != bookPage.PriceInBasket)
+                //{
+                //    Assert.Fail(ErrorMessagesConstants.PricesDoesNotMatch);
+                //}
+                if (!bookPage.IsOneItemInSubtotal)
+                {
+                    Assert.Fail(ErrorMessagesConstants.ThereIsMoreThanOneProduct);
                 }
             }
         }

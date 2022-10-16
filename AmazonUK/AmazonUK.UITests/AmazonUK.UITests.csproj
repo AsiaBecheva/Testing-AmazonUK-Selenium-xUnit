@@ -65,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AmazonUKWebAppShould.cs" />
+    <Compile Include="Constants\ErrorMessagesConstants.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="ObjectModels\BooksPage.cs" />
     <Compile Include="ObjectModels\HomePage.cs" />
