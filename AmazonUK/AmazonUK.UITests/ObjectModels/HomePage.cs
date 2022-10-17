@@ -7,6 +7,7 @@
     public class HomePage
     {
         private readonly IWebDriver Driver;
+
         private const string PageUrl = "https://www.amazon.co.uk/";
         private const string PageTitle = "Amazon.co.uk: Low Prices in Electronics, Books, Sports Equipment & more";
         private const string CookieId = "sp-cc-accept";
